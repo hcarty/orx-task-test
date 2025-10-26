@@ -1,0 +1,198 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "reveal": "always",
+    "revealProblems": "onProblem"
+  },
+  "type": "shell",
+  "linux": {
+    "options": {
+      "cwd": "build/linux/gmake/",
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/linux/gmake/"
+        ]
+      }
+    }
+  },
+  "osx": {
+    "options": {
+      "cwd": "build/mac/gmake/",
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/mac/gmake/"
+        ]
+      }
+    }
+  },
+  "windows": {
+    "options": {
+      "cwd": "build/windows/gmake/",
+      "shell": {
+        "executable": "cmd.exe",
+        "args": [
+          "/d",
+          "/c"
+        ]
+      },
+      "problemMatcher": {
+        "base": "$gcc",
+        "fileLocation": [
+          "relative",
+          "${workspaceFolder}/build/windows/gmake/"
+        ]
+      }
+    }
+  },
+  "tasks": [
+    {
+      "label": "Refresh runtask project files",
+      "group": "build",
+      "type": "shell",
+      "command": "./premake4",
+      "windows": {
+        "command": "premake4.exe gmake"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/build/"
+      }
+    },
+    {
+      "label": "Build runtask (debug, profile, release, web)",
+      "dependsOrder": "sequence",
+      "dependsOn": [
+        "Build runtask (debug)",
+        "Build runtask (profile)",
+        "Build runtask (release)",
+        "Build runtask (web)"
+      ],
+      "problemMatcher": "$gcc"
+    },
+    {
+      "label": "Build runtask (debug)",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "linux": {
+        "command": "make -j config=debug64"
+      },
+      "osx": {
+        "command": "make -j config=debuguniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=debug64"
+      }
+    },
+    {
+      "label": "Build runtask (profile)",
+      "group": "build",
+      "type": "shell",
+      "linux": {
+        "command": "make -j config=profile64"
+      },
+      "osx": {
+        "command": "make -j config=profileuniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=profile64"
+      }
+    },
+    {
+      "label": "Build runtask (release)",
+      "group": "build",
+      "type": "shell",
+      "linux": {
+        "command": "make -j config=release64"
+      },
+      "osx": {
+        "command": "make -j config=releaseuniv64"
+      },
+      "windows": {
+        "command": "mingw32-make.exe -j config=release64"
+      }
+    },
+    {
+      "label": "Build runtask (web)",
+      "dependsOn": [
+        "Build runtask (release)"
+      ],
+      "group": "build",
+      "type": "shell",
+      "command": "emmake make -j config=releaseweb"
+    },
+    {
+      "label": "Run runtask (debug)",
+      "dependsOn": [
+        "Build runtask (debug)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      },
+      "type": "process",
+      "command": "runtaskd",
+      "windows": {
+        "command": "runtaskd.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run runtask (profile)",
+      "dependsOn": [
+        "Build runtask (profile)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "process",
+      "command": "runtaskp",
+      "windows": {
+        "command": "runtaskp.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run runtask (release)",
+      "dependsOn": [
+        "Build runtask (release)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "process",
+      "command": "runtask",
+      "windows": {
+        "command": "runtask.exe"
+      },
+      "options": {
+        "cwd": "${workspaceFolder}/bin/"
+      }
+    },
+    {
+      "label": "Run runtask (web)",
+      "dependsOn": [
+        "Build runtask (web)"
+      ],
+      "group": {
+        "kind": "test",
+        "isDefault": false
+      },
+      "type": "shell",
+      "command": "emrun index.html",
+      "options": {
+        "cwd": "${workspaceFolder}/bin/web/"
+      }
+    }
+  ]
+}
