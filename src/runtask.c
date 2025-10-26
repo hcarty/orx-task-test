@@ -51,7 +51,8 @@ orxSTATUS OtherThread(void *pContext)
   stContext.bContinue = orxFALSE;
   stContext.zMessage = "in a bottle";
 
-  orxThread_RunTask(orxNULL, MainThreadTask, orxNULL, &stContext);
+  orxSTATUS eResult = orxThread_RunTask(orxNULL, MainThreadTask, orxNULL, &stContext);
+  orxASSERT(eResult == orxSTATUS_SUCCESS);
 
   while (stContext.bContinue != orxTRUE)
   {
@@ -80,7 +81,8 @@ orxSTATUS orxFASTCALL Init()
   // Register the Update & CameraUpdate functions to the core clock
   orxClock_Register(orxClock_Get(orxCLOCK_KZ_CORE), Update, orxNULL, orxMODULE_ID_MAIN, orxCLOCK_PRIORITY_NORMAL);
 
-  orxThread_Start(OtherThread, "OtherThread", orxNULL);
+  orxU32 eResult = orxThread_Start(OtherThread, "OtherThread", orxNULL);
+  orxASSERT(eResult != orxU32_UNDEFINED);
 
   // Done!
   return orxSTATUS_SUCCESS;
